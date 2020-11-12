@@ -19,10 +19,10 @@ const createUser = async (req, res) => {
       })
     }
     const token = generateToken(name, email, password)
-    // const activationLink = await alias(
-    //   `${process.env.CLIENT_URL}/users/activate/${token}`
-    // )
-    const activationLink = `${process.env.CLIENT_URL}/users/activate/${token}`
+    const activationLink = await alias(
+      `${process.env.CLIENT_URL}/users/activate/${token}`
+    )
+    // const activationLink = `${process.env.CLIENT_URL}/users/activate/${token}`
     sendEmailVerification(activationLink, email).then((sent) =>
       res.json({
         message: 'An activation link has been sent to your email',

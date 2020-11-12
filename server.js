@@ -2,14 +2,13 @@ const express = require('express')
 const { establishDatabaseConnection } = require('./config/db')
 const app = express()
 
-require('dotenv').config()
-
-app.use(require('morgan')('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
 if (process.env.NODE_ENV === 'development') {
+  require('dotenv').config()
   app.use(require('cors')({ origin: process.env.CLIENT_URL }))
+  app.use(require('morgan')('dev'))
 }
 
 // Routes
