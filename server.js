@@ -1,0 +1,24 @@
+const express = require('express')
+const { establishDatabaseConnection } = require('./config/db')
+const app = express()
+
+require('dotenv').config()
+
+app.use(require('morgan')('dev'))
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+
+if (process.env.NODE_ENV === 'development') {
+  app.use(require('cors')({ origin: process.env.CLIENT_URL }))
+}
+
+// Routes
+const authRoutes = require('./routes/auth')
+app.get('/uptime', (req, res) =>
+  res.json({ message: 'Server is up and running!', status: 200 })
+)
+app.use('/api/users', authRoutes)
+
+const PORT = process.env.PORT || 8000
+establishDatabaseConnection()
+app.listen(PORT, () => console.log('api service running @', PORT))
