@@ -49,7 +49,7 @@ const activateUser = (req, res) => {
   user.save((err, user) => {
     if (err)
       return res.status(500).json({
-        error: 'Error establishing connection with database',
+        error: 'Hmm! Something is mischievous. Retry registration.',
         success: false,
       })
     res
