@@ -17,4 +17,19 @@ const authenticationBody = [
     .withMessage('Password must be in between 6-28 characters'),
 ]
 
-module.exports = { registrationBody, authenticationBody }
+const forgotPasswordBody = [
+  check('email').isEmail().withMessage('Must be a valid email address'),
+]
+
+const resetPasswordBody = [
+  check('newPassword')
+    .isLength({ min: 6, max: 28 })
+    .withMessage('Password must be in between 6-28 characters'),
+]
+
+module.exports = {
+  registrationBody,
+  authenticationBody,
+  forgotPasswordBody,
+  resetPasswordBody,
+}

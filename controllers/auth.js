@@ -1,10 +1,13 @@
 const User = require('../models/User')
 const { alias } = require('../helpers/alias')
 const { sendEmailVerification } = require('../helpers/mailer')
+const { OAuth2Client } = require('google-auth-library')
 const {
   generateToken,
   decodeToken,
   authenticationToken,
+  decodeIdFromToken,
+  signAToken,
 } = require('../helpers/tokenization')
 
 const createUser = async (req, res) => {
@@ -23,7 +26,12 @@ const createUser = async (req, res) => {
       `${process.env.CLIENT_URL}/users/activate/${token}`
     )
     // const activationLink = `${process.env.CLIENT_URL}/users/activate/${token}`
-    sendEmailVerification(activationLink, email).then((sent) =>
+    sendEmailVerification(
+      activationLink,
+      email,
+      'newAccount',
+      'emailVerification'
+    ).then((sent) =>
       res.json({
         message: 'An activation link has been sent to your email',
         success: true,
@@ -40,7 +48,7 @@ const createUser = async (req, res) => {
 
 const activateUser = (req, res) => {
   const { token } = req.body
-  const details = decodeToken(token)
+  const details = decodeToken(token, process.env.SECRET_KEY)
   if (details.error) {
     return res.status(403).json(details)
   }
@@ -70,9 +78,123 @@ const loginUser = async (req, res) => {
     return res
       .status(401)
       .json({ error: 'Wrong email/password combination', success: false })
-  const token = authenticationToken({ _id: user._id }, remember)
+  const token = authenticationToken(
+    { _id: user._id },
+    process.env.ACCOUNT_LOGIN_SECRET,
+    remember
+  )
   const { _id, name, role } = user
   res.json({ token, user: { _id, name, email, role } })
 }
 
-module.exports = { createUser, activateUser, loginUser }
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body
+    const user = await User.findOne({ email })
+    // token will expire in 2 hour.
+    const token = authenticationToken(
+      { _id: user._id },
+      process.env.ACCOUNT_RESET_SECRET
+    )
+    const activationLink = await alias(
+      `${process.env.CLIENT_URL}/users/recovery/${token}`
+    )
+    await user.updateOne({ resetPasswordLink: token })
+    sendEmailVerification(
+      activationLink,
+      email,
+      'recoverAccount',
+      'forgotPasswordVerification'
+    ).then((sent) =>
+      res.json({
+        message: 'A reset password link has been sent to your email',
+        success: true,
+      })
+    )
+  } catch (error) {
+    res.status(422).send({
+      error: 'No such user exists. Re-check your email',
+      success: false,
+    })
+  }
+}
+
+const resetPassword = async (req, res) => {
+  const { resetPasswordLink, newPassword } = req.body
+  if (resetPasswordLink) {
+    const status = decodeIdFromToken(
+      resetPasswordLink,
+      process.env.ACCOUNT_RESET_SECRET
+    )
+    if (status) {
+      User.findOne({ resetPasswordLink }, (err, doc) => {
+        if (err)
+          return res
+            .status(500)
+            .send({ error: 'Error establishing connection with database' })
+        doc.password = newPassword
+        doc.resetPasswordLink = ''
+        doc.save((errors, docu) => {
+          if (errors) return res.status(500).send({ error: 'DB Error' })
+          return res.send({
+            message: 'Password has been changed successfully',
+            succes: true,
+          })
+        })
+      })
+    }
+  } else {
+    return res.status(403).send({ error: 'No token found', success: false })
+  }
+}
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
+const googleLogin = async (req, res) => {
+  const { idToken } = req.body
+  try {
+    const response = await client.verifyIdToken({
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    })
+    // console.log(response.payload)
+    const { email_verified, name, email } = response.payload
+    if (email_verified) {
+      let user = await User.findOne({ email })
+      if (user) {
+        const token = signAToken(
+          { _id: user._id },
+          process.env.ACCOUNT_LOGIN_SECRET
+        )
+        const { _id, name, role } = user
+        return res.json({ token, user: { _id, email, name, role } })
+      }
+
+      let password = email + process.env.ACCOUNT_LOGIN_SECRET
+      user = new User({ name, email, password })
+      await user.save()
+      const token = signAToken(
+        { _id: user._id },
+        process.env.ACCOUNT_LOGIN_SECRET
+      )
+      return res.json({
+        token,
+        user: { _id: user._id, email, name, role: user.role },
+      })
+    }
+    return res
+      .status(403)
+      .send({ error: 'Permission was denied', success: false })
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({ error: 'Google OAuth Error', success: false })
+  }
+}
+
+module.exports = {
+  createUser,
+  activateUser,
+  loginUser,
+  forgotPassword,
+  resetPassword,
+  googleLogin,
+}
