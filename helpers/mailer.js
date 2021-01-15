@@ -5,11 +5,13 @@ mailer.setApiKey(process.env.MAILER_API_KEY)
 const templates = {
   emailVerification: 'd-957bbb04fe354480bf8d83fff94a21d6',
   forgotPasswordVerification: 'd-9840b22fd4584ddea32829acf2ec0ad0',
+  newAccountByAdmin: 'd-33b14ba0b5944176937dd90f249514b4',
 }
 
 const subject = {
   newAccount: 'New Registration Verification | Student Profile System',
   recoverAccount: 'Password Reset Request | Student Profile System',
+  newAccountByAdmin: 'Activate your account | Student Profile System',
 }
 
 exports.sendEmailVerification = async (link, to, sub, type) => {

@@ -17,6 +17,10 @@ const userSchema = new Schema(
       lowercase: true,
       unique: true,
     },
+    phone: {
+      type: String,
+      default: '',
+    },
     hashed_password: {
       type: String,
       required: true,
@@ -30,6 +34,10 @@ const userSchema = new Schema(
       type: String,
       role: ['superuser', 'pat', 'ssd', 'teacher'],
       default: 'teacher',
+    },
+    is_blocked: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

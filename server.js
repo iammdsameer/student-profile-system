@@ -4,8 +4,8 @@ const app = express()
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
-app.use(require('cors')({ origin: process.env.CLIENT_URL }))
-
+app.use(require('cors')({}))
+// origin: process.env.CLIENT_URL
 if (process.env.NODE_ENV === 'development') {
   require('dotenv').config()
   app.use(require('morgan')('dev'))
@@ -14,7 +14,7 @@ if (process.env.NODE_ENV === 'development') {
 // Routes
 const authRoutes = require('./routes/auth')
 const profileRoutes = require('./routes/profile')
-app.get('/uptime', (req, res) =>
+app.get('/check', (req, res) =>
   res.json({ message: 'Server is up and running!', status: 200 })
 )
 app.use('/api/users', authRoutes)

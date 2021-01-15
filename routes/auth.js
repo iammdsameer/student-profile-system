@@ -1,11 +1,22 @@
 const router = require('express').Router()
 
 const {
+  listOfAllUsers,
+  deleteUser,
+  editUser,
+  blockUser,
+  bulkCreate,
+  totalUsers,
+  blockedUsersTotal,
+} = require('../controllers/adminTasks')
+const {
   createUser,
   activateUser,
   loginUser,
   forgotPassword,
   resetPassword,
+  changePassword,
+  createUserViaAdmin,
   googleLogin,
 } = require('../controllers/auth')
 
@@ -17,11 +28,20 @@ const {
 } = require('../helpers/auth.validation')
 const { validate } = require('../helpers/check.validation')
 
-router.post('/new', registrationBody, validate, createUser)
-router.post('/activate-new', activateUser)
-router.post('/login', authenticationBody, validate, loginUser)
-router.put('/forgot-password', forgotPasswordBody, validate, forgotPassword)
-router.put('/reset-password', resetPasswordBody, validate, resetPassword)
 router.post('/auth/google', googleLogin)
+router.post('/activate-new', activateUser)
+router.post('/admin/users-list', listOfAllUsers)
+router.delete('/admin/delete-user', deleteUser)
+router.put('/admin/edit-user', editUser)
+router.get('/admin/total-users-count', totalUsers)
+router.get('/admin/blocked-users-count', blockedUsersTotal)
+router.put('/admin/block-user', blockUser)
+router.post('/admin/bulk-create', bulkCreate)
+router.post('/new', registrationBody, validate, createUser)
+router.post('/new-via-admin', registrationBody, validate, createUserViaAdmin)
+router.post('/login', authenticationBody, validate, loginUser)
+router.put('/reset-password', resetPasswordBody, validate, resetPassword)
+router.put('/forgot-password', forgotPasswordBody, validate, forgotPassword)
+router.put('/change-password', changePassword)
 
 module.exports = router
