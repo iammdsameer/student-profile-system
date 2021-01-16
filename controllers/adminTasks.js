@@ -46,10 +46,9 @@ const blockUser = async (req, res) => {
 const bulkCreate = async (req, res) => {
   try {
     const { datas } = req.body
-    await User.insertMany(datas)
-    res.json({ message: 'success' })
+    await User.insertMany(datas, { ordered: false })
+    res.json({ message: 'All data were correct and inserted successfully' })
   } catch (error) {
-    console.log(error)
     res.status(500).json({ error })
   }
 }

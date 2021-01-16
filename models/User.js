@@ -1,5 +1,6 @@
 const crypto = require('crypto')
-const { Schema, model } = require('mongoose')
+const { Schema, model, SchemaTypes } = require('mongoose')
+require('mongoose-type-email')
 
 const userSchema = new Schema(
   {
@@ -11,7 +12,7 @@ const userSchema = new Schema(
       max: 30,
     },
     email: {
-      type: String,
+      type: SchemaTypes.Email,
       trim: true,
       required: true,
       lowercase: true,

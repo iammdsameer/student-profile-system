@@ -5,7 +5,6 @@ const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(require('cors')({ origin: process.env.CLIENT_URL }))
-// origin: process.env.CLIENT_URL
 if (process.env.NODE_ENV === 'development') {
   require('dotenv').config()
   app.use(require('morgan')('dev'))

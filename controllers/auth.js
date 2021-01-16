@@ -257,13 +257,17 @@ const googleLogin = async (req, res) => {
 }
 
 const changePassword = async (req, res) => {
-  const { id, password } = req.body.data
+  const { id, current, nayapassword } = req.body.data
   User.findOne({ _id: id }, (err, doc) => {
     if (err)
       return res
         .status(500)
         .send({ error: 'Error establishing connection with database' })
-    doc.password = password
+    if (!doc.authenticate(current))
+      return res
+        .status(401)
+        .json({ error: 'Current password is incorrect.', success: false })
+    doc.password = nayapassword
     doc.save((errors, docu) => {
       if (errors) return res.status(500).send({ error: 'DB Error' })
       return res.send({
