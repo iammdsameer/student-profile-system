@@ -183,6 +183,15 @@ const studentLevelReturn = async (req, res) => {
   }
 }
 
+const totalStudents = async (req, res) => {
+  try {
+    const students = await Student.find({})
+    res.json({ count: students.length })
+  } catch (err) {
+    res.status(500).json({ error: err })
+  }
+}
+
 module.exports = {
   listOfAllUsers,
   deleteUser,
@@ -197,4 +206,5 @@ module.exports = {
   deleteModule,
   listOfAllStudents,
   studentLevelReturn,
+  totalStudents,
 }

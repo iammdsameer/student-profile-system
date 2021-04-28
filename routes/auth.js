@@ -14,6 +14,7 @@ const {
   deleteModule,
   listOfAllStudents,
   studentLevelReturn,
+  totalStudents,
 } = require('../controllers/adminTasks')
 const {
   createUser,
@@ -55,5 +56,6 @@ router.put('/change-password', changePassword)
 router.post('/admin/create-module', moduleCreate)
 router.post('/admin/return-module', moduleReturn)
 router.delete('/admin/delete-module', deleteModule)
+router.get('/admin/total-students', totalStudents)
 
 module.exports = router
