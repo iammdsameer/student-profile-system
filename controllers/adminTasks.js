@@ -192,6 +192,18 @@ const totalStudents = async (req, res) => {
   }
 }
 
+const clearStudents = async (req, res) => {
+  try {
+    await Student.remove({})
+    res.json({
+      message:
+        'All Student Records were cleared. Go to Upload Records to reupload new records',
+    })
+  } catch (err) {
+    res.status(500).json({ error: err })
+  }
+}
+
 module.exports = {
   listOfAllUsers,
   deleteUser,
@@ -207,4 +219,5 @@ module.exports = {
   listOfAllStudents,
   studentLevelReturn,
   totalStudents,
+  clearStudents,
 }
