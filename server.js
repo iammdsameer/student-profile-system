@@ -14,10 +14,12 @@ if (process.env.NODE_ENV === 'development') {
 // Routes
 const authRoutes = require('./routes/auth')
 const profileRoutes = require('./routes/profile')
+const teacherRoutes = require('./routes/teacher')
 app.get('/check', (req, res) =>
   res.json({ message: 'Server is up and running!', status: 200 })
 )
 app.use('/api/users', authRoutes)
+app.use('/api/teachers', teacherRoutes)
 app.use('/api/profile', profileRoutes)
 
 const PORT = process.env.PORT || 8000

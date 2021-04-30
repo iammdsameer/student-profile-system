@@ -1,6 +1,7 @@
 const User = require('../models/User')
 const Module = require('../models/Module')
 const Student = require('../models/Student')
+const Blacklist = require('../models/BlackList')
 
 const listOfAllUsers = async (req, res) => {
   await User.find({}).then((users) => {
