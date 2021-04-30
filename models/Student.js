@@ -13,6 +13,11 @@ const studentSchema = new Schema(
     },
     level: String,
     modules: {},
+    reviewed: {
+      type: Boolean,
+      default: false,
+    },
+    reviews: String,
   },
   { timestamps: true }
 )

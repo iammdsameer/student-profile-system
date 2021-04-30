@@ -88,6 +88,7 @@ const bulkCreateStudents = async (req, res) => {
       const refined_data = datas.map((e) => ({
         ...e,
         modules: { [e.module]: parseInt(e.percent.split('%')[0]) },
+        key: e.sid,
       }))
       await Student.insertMany(refined_data, { ordered: false })
     } else {
@@ -169,12 +170,12 @@ const studentLevelReturn = async (req, res) => {
     var levelTwoStudents = []
     students.forEach((e) => {
       var black_modules = Object.values(e.modules).filter((e) => e < 40).length
-      e.key = e._id
+      const docWithKey = { ...e._doc, key: e.sid }
       if (black_modules === 2) {
-        levelOneStudents.push(e)
+        levelOneStudents.push(docWithKey)
       }
       if (black_modules > 2) {
-        levelTwoStudents.push(e)
+        levelTwoStudents.push(docWithKey)
       }
     })
     res.json({ levelTwoStudents, levelOneStudents })
@@ -203,6 +204,18 @@ const clearStudents = async (req, res) => {
     res.status(500).json({ error: err })
   }
 }
+const alterReviewed = async (req, res) => {
+  try {
+    const { sid, reviewed } = req.body
+    console.log(sid, reviewed)
+    await Student.findOneAndUpdate({ sid }, { reviewed })
+    res.json({
+      message: 'Review Altered',
+    })
+  } catch (err) {
+    res.status(500).json({ error: err })
+  }
+}
 
 module.exports = {
   listOfAllUsers,
@@ -220,4 +233,5 @@ module.exports = {
   studentLevelReturn,
   totalStudents,
   clearStudents,
+  alterReviewed,
 }
