@@ -167,15 +167,21 @@ const moduleReturn = async (req, res) => {
 const studentLevelReturn = async (req, res) => {
   try {
     const students = await Student.find({})
+    const blacklistedStudents = await Blacklist.find({})
     var levelOneStudents = []
     var levelTwoStudents = []
     students.forEach((e) => {
-      var black_modules = Object.values(e.modules).filter((e) => e < 40).length
       const docWithKey = { ...e._doc, key: e.sid }
+      for (var i = 0; i < blacklistedStudents.length; i++) {
+        if (blacklistedStudents[i].sid === e.sid) {
+          levelTwoStudents.push(docWithKey)
+          return
+        }
+      }
+      var black_modules = Object.values(e.modules).filter((e) => e < 40).length
       if (black_modules === 2) {
         levelOneStudents.push(docWithKey)
-      }
-      if (black_modules > 2) {
+      } else if (black_modules > 2) {
         levelTwoStudents.push(docWithKey)
       }
     })
@@ -208,7 +214,6 @@ const clearStudents = async (req, res) => {
 const alterReviewed = async (req, res) => {
   try {
     const { sid, reviewed } = req.body
-    console.log(sid, reviewed)
     await Student.findOneAndUpdate({ sid }, { reviewed })
     res.json({
       message: 'Review Altered',

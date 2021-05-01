@@ -29,6 +29,8 @@ const {
   googleLogin,
 } = require('../controllers/auth')
 
+const { addComment, fetchComment } = require('../controllers/comment')
+
 const {
   registrationBody,
   authenticationBody,
@@ -61,5 +63,7 @@ router.delete('/admin/delete-module', deleteModule)
 router.get('/admin/total-students', totalStudents)
 router.post('/admin/remove-students', clearStudents)
 router.post('/admin/alter-review-students', alterReviewed)
+router.post('/admin/add-comment', addComment)
+router.post('/admin/fetch-comments', fetchComment)
 
 module.exports = router

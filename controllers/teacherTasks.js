@@ -29,4 +29,19 @@ const addToBlacklist = async (req, res) => {
   }
 }
 
-module.exports = { allStudents, allBlackListedStudents, addToBlacklist }
+const removeFromBlacklist = async (req, res) => {
+  const { sid } = req.body
+  try {
+    await Blacklist.findOneAndDelete({ sid })
+    res.send({ success: true })
+  } catch (err) {
+    res.status(500).send({ err })
+  }
+}
+
+module.exports = {
+  allStudents,
+  allBlackListedStudents,
+  addToBlacklist,
+  removeFromBlacklist,
+}
