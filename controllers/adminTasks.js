@@ -173,7 +173,7 @@ const studentLevelReturn = async (req, res) => {
     students.forEach((e) => {
       const docWithKey = { ...e._doc, key: e.sid }
       for (var i = 0; i < blacklistedStudents.length; i++) {
-        if (blacklistedStudents[i].sid === e.sid) {
+        if (blacklistedStudents[i].key === e.sid) {
           levelTwoStudents.push(docWithKey)
           return
         }

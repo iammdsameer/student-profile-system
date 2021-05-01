@@ -2,7 +2,7 @@ const { Schema, model } = require('mongoose')
 
 const blackList = new Schema(
   {
-    sid: {
+    key: {
       type: String,
       required: true,
       unique: true,
@@ -12,6 +12,8 @@ const blackList = new Schema(
       required: true,
     },
     level: String,
+    remarks: String,
+    type: String,
   },
   { timestamps: true }
 )

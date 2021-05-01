@@ -19,10 +19,17 @@ const allBlackListedStudents = async (req, res) => {
 }
 
 const addToBlacklist = async (req, res) => {
-  const { name } = req.body
+  const { name, remarks, type } = req.body
   try {
     const doc = await Student.findOne({ name })
-    await Blacklist.create({ sid: doc.sid, name: doc.name, level: doc.level })
+    console.log(name, remarks, type)
+    await Blacklist.create({
+      key: doc.sid,
+      name: doc.name,
+      level: doc.level,
+      remarks,
+      type,
+    })
     res.send({ success: true })
   } catch (err) {
     res.status(500).send({ err })
@@ -30,9 +37,9 @@ const addToBlacklist = async (req, res) => {
 }
 
 const removeFromBlacklist = async (req, res) => {
-  const { sid } = req.body
+  const { key } = req.body
   try {
-    await Blacklist.findOneAndDelete({ sid })
+    await Blacklist.findOneAndDelete({ key })
     res.send({ success: true })
   } catch (err) {
     res.status(500).send({ err })
