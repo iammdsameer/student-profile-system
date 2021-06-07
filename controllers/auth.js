@@ -227,25 +227,12 @@ const googleLogin = async (req, res) => {
         )
         const { _id, name, role, phone } = user
         return res.json({ token, user: { _id, email, name, role, phone } })
+      } else {
+        return res.status(403).send({
+          error: 'No account was linked to this account',
+          success: false,
+        })
       }
-
-      let password = email + process.env.ACCOUNT_LOGIN_SECRET
-      user = new User({ name, email, password })
-      await user.save()
-      const token = signAToken(
-        { _id: user._id },
-        process.env.ACCOUNT_LOGIN_SECRET
-      )
-      return res.json({
-        token,
-        user: {
-          _id: user._id,
-          email,
-          name,
-          role: user.role,
-          phone: user.phone,
-        },
-      })
     }
     return res
       .status(403)
